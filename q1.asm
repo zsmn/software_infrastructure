@@ -1,6 +1,7 @@
 org 0x7c00
 jmp 0x0000:start
 
+hello db 'ABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDA'
 start:
 
 	call reset_registers
@@ -13,6 +14,8 @@ reset_registers:
 	mov ds, ax
 	mov cx, ax
 	mov dx, ax
+	
+	mov si, hello
 
 	ret
 	
@@ -32,7 +35,8 @@ draw_outer_loop:
 	add cx, 1 ; adiciona +1 a res_line
 
 draw_inner_loop:
-
+	lodsb
+	
 	cmp dx, 16 ; se fizer as 16 colunas (considera começando de 0)
 	je reset_inner_loop ; se for igual jumpa pra reset
 
@@ -42,8 +46,8 @@ draw_inner_loop:
 	; onde um deles vai printar caso a asc2 esteja entre '0' e '9'
 	; e outro quando estiver entre 'A' e 'F'
 	; (fazer codigo em c++ pra a conversão!)
-	cmp dx, 8
-	ja print_pixel_aschigher
+	cmp al, 'A'
+	jae print_pixel_aschigher
 
 	call print_pixel_asclower
 
@@ -51,14 +55,14 @@ draw_inner_loop:
 
 print_pixel_asclower:
 	mov ah, 0CH ; write pixel
-	mov al, 8 ; color
+	sub al, '0' ; color, subtraindo 48 (asc2 = '0')
 	int 10h
 
 	ret
 
 print_pixel_aschigher:
 	mov ah, 0CH ; write pixel
-	mov al, 10 ; color
+	sub al, '7' ; color, subtraindo 55 (asc2 = '7')
 	int 10h
 
 	jmp draw_inner_loop
