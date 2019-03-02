@@ -28,12 +28,6 @@ iniciar_video:
 	mov bx, 10H
 	int 10h
 
-	mov al, 13h
-	mov ah, 0
-	int 10h
-	
-	ret
-
 start_vivi:
 	mov al, 13h
 	mov ah, 0
