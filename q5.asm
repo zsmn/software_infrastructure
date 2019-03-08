@@ -1,5 +1,4 @@
-;; descobrir como fazer a ordenação de prioridade
-
+;; procurar uma maneira de inserir o "rugby" depois
 org 0x7c00
 jmp 0x0000:start
 
@@ -15,8 +14,6 @@ p2 db 0
 p3 db 0
 
 o1 dw '---'
-o2 dw '---'
-o3 dw '---'
 
 carry_b:
     mov si, b
@@ -56,8 +53,6 @@ reset_register:
     xor bx, bx
     xor dx, dx
     xor cx, cx
-    xor di, di
-    xor si, si
     ret
 
 printar_str:
@@ -135,7 +130,7 @@ choose_02:
         ret
     
     .carry_o2:
-        mov si, o2
+        mov si, o1
         ret
 
 choose_03:
@@ -165,46 +160,30 @@ choose_03:
         ret
 
     .carry_o3:
-        mov si, o3
+        mov si, o1
         ret
 
+print_aux:
+    call printar_str
+    call printar_barra
+    ret
+
 show_at:
-    call printa_03
-    call printa_01
-    call printa_02
+    call choose_03
+    call print_aux
+    call choose_01
+    call print_aux
+    call choose_02
+    call print_aux
 
     xor di, di
     xor si, si
-    ret
-
-printa_03:
-    call choose_03
-    call printar_str
-    call printar_barra
-
-    ret
-
-printa_01:
-    call choose_01
-    call printar_str
-    call printar_barra
-
-    ret
-
-printa_02:
-    call choose_02
-    call printar_str
-    call printar_barra
-
+    call endl
     ret
 
 start:
     call show_at
     call reset_register
-    jmp exec
-
-help:
-    call show_at
     jmp exec
 
 exec:
@@ -242,13 +221,38 @@ generate:
     jmp end
 
     .put_1:
-        mov dl, byte[aa]
-        mov byte[p1], dl
-        jmp .fim
+        cmp byte[p1], 0
+        je .subst
+        cmp byte[p1], 0
+        jne .fnew
+        .fnew:
+            mov dl, byte[p2]
+            mov byte[p3], dl
+            mov dl, byte[p1]
+            mov byte[p2], dl
+            mov dl, byte[aa]
+            mov byte[p1], dl
+            jmp .fim
+        .subst:
+            mov dl, byte[aa]
+            mov byte[p1], dl
+            jmp .fim
     .put_2:
-        mov dl, byte[aa]
-        mov byte[p2], dl
-        jmp .fim
+        cmp byte[p2], 0
+        je .subst2
+        cmp byte[p2], 0
+        jne .fnew2
+        .fnew2:
+            mov dl, byte[p2]
+            mov byte[p3], dl
+            mov dl, byte[aa]
+            mov byte[p2], dl
+            jmp .fim
+        .subst2:
+            mov dl, byte[aa]
+            mov byte[p2], dl
+            jmp .fim
+
     .put_3:
         mov dl, byte[aa]
         mov byte[p3], dl
@@ -256,7 +260,7 @@ generate:
 
     .fim:
         call endl
-        jmp help
+        jmp start
 
 teste:
     mov al, 'k'
