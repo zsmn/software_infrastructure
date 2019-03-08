@@ -1,3 +1,5 @@
+;; descobrir como fazer a ordenação de prioridade
+
 org 0x7c00
 jmp 0x0000:start
 
