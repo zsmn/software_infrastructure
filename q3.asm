@@ -1,8 +1,8 @@
 org 0x7c00
 jmp 0x0000:start
 
-entrada db 'foi'
-entrada2 db 'fuck'
+entrada db 'o'
+entrada2 db 'w'
 entrada3 db 'V'
 ;jenifer db 10
 
@@ -110,52 +110,106 @@ resultado:
     add ax, bx ; ax = (n*n)+n
     mov cx, 2; cx = 2; 
     div cx; ax = ((n*n)+n)/2
-    mov cx, bx; cx = n
-    mov bx , 2; bx = 2
-    add bx, cx ; bx = n+2
-    mul bx; ax = (((n*n)+n)/2)*(n+2)
-    mov bx, cx;
-    mov cx, 3;
-    div cx; ax = ((((n*n)+n)/2)*(n+2))/3
+    ;mov cx, bx; cx = n
+    ;mov bx , 2; bx = 2
+    ;add bx, cx ; bx = n+2
+    ;mul bx; ax = (((n*n)+n)/2)*(n+2)
+    ;mov bx, cx;
+    ;mov cx, 3;
+    ;div cx; ax = ((((n*n)+n)/2)*(n+2))/3
     mov bx, ax
     mov cx, ax
     mov dx, ax
     jmp mostrar
 
 mostrar:
-    cmp bx, 27720;
-    je delicia;
-    jmp fuck;
+    xor cx, cx;
+    ;cmp bx, 220;
+   ; je delicia;
+    jmp numbre;
+
+numbre:
+   ; call delicia;
+    mov ax, bx; ax e dx tem o numero
+    mov bx, 10;
+    xor dx, dx
+    ;
+    ;
+    ;
+
+    div bx; divido por 10
+    ;
+    ;
+    ;
+    ;
+
+    ;cmp ax, 0;
+    add dx, '0';
+    push dx;
+    xor dx, dx;
+    inc cl;
+    mov bx, ax;
+    cmp ax, 0;
+   ; call delicia;
+    je ajustes;
+    jmp numbre;
+
+ajustes:
+    mov ch,cl;
+    cmp ch, 3;
+    ;je shupa;
+    jmp reverter
+
+reverter:
+    ;call fuck;
+    xor ax,ax
+    cmp cl, 0;
+    je telinha_vitoria
+    pop ax;
+    call _putchar
+    dec cl;
+    stosb;
+    jmp reverter;
+
+telinha_vitoria:
+    ;call fuck
+    cmp ch, 0
+    je exit;
+    xor ax, ax;
+    lodsb
+    ;call _putchar;
+    dec ch;
+    jmp telinha_vitoria;
 
 shupa:
     xor si, si
     mov si, entrada;
-    jmp printa;
+    call printa;
+    ret
 
 delicia:
     xor si, si
     mov si, entrada3
-    jmp printa2
+    call printa2
+    ret
 
 fuck:
     xor si, si
-    mov si, entrada2;
-    jmp printa;
-
+    mov si, entrada2
+    call printa2
+    ret
 printa:
     lodsb
-    cmp al, 0;
-    je exit;
     mov ah, 0eh;
     int 10h
-    jmp printa;
-
+    ;jmp exit;
+    ret
 printa2:
     lodsb
     mov ah, 0eh;
     int 10h
-    jmp exit;
-
+    ;jmp exit;
+    ret
 exit:
     jmp $
     times 510 - ($-$$) db 0
