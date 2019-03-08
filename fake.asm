@@ -1,9 +1,7 @@
 org 0x7c00
 jmp 0x0000:start
 
-aux dw 0
-teste db 0
-piroca db 0
+flag db 0
 
 start:
     call reset_register
@@ -55,7 +53,7 @@ self_loop:
     je gerar_num
     cmp al, 0x08; caso pressione backspace
     je _delchar
-    cmp al, 44; caso pressione a virgula ignora
+    cmp al, 44; caso pressione a virgula gera o primeiro numero antes da virgula e depois getch para o segundo
     je .extra
 
     inc cl
@@ -66,11 +64,31 @@ self_loop:
 
     .extra:
         call _putchar
+        jmp gerar_num
     
     jmp self_loop
+
+self_loop_centavos:
+    call _getchar
+    cmp al, 0x0d; caso pressione enter
+    je gerar_num
+    cmp al, 0x08; caso pressione backspace
+    je _delchar
+
+    inc cl
+    call _putchar
+    stosb
+
+    jmp self_loop_centavos
+
+    .extra:
+        call _putchar
+        jmp gerar_num
     
+    jmp self_loop_centavos
+
 gerar_num:
-    call _endl
+    ;call _endl
     lodsb
     sub al, 48
     mov dh, 0
@@ -78,7 +96,7 @@ gerar_num:
     dec cl
     
     cmp cl, 0
-    je calcular
+    je decide
 
     jmp gamb1
 
@@ -87,7 +105,7 @@ gamb1:
     mov bx, 10
     
     cmp cl, 0
-    je calcular
+    je decide
 
     mov ax, dx
     mul bx
@@ -98,16 +116,38 @@ gamb1:
     sub al, 48
     add dx, ax
     dec cl
+
     jmp gamb1
 
-calcular:
-    cmp dx, 12424
-    je printar_teste
+decide:
+    cmp byte[flag], 0
+    je calcular_dec
+    cmp byte[flag], 1
+    je calcular_cent
 
-    jmp calcular
+calcular_dec:
+;; mas q porra é essa?
+    mov ax, dx
+    mov bx, 2
+    
+    div bx
+    mov dx, ax
 
-printar_teste:
-    mov al, 'v'
+    cmp dx, 62
+    je pica
+
+    mov byte[flag], 1
+    jmp self_loop_centavos
+
+
+calcular_cent:
+    cmp dx, 24
+    je pica
+
+    jmp calcular_cent
+
+pica:
+    mov al, 'k'
     call _putchar
 
 exit:
