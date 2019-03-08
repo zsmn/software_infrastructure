@@ -1,156 +1,154 @@
+;;so ta faltando fazer os centavos
+
 org 0x7c00
 jmp 0x0000:start
 
-flag db 0
+aux dw 0
+aux2 dw 0
 
-start:
-    call reset_register
-    jmp self_loop
-
-reset_register:
-    xor ax, ax
-    mov dx, ax
-    xor cl, cl
-    ret
-    ; resetando os registradores
-
-_putchar:
+putchar:
     mov ah, 0eh
     int 10h
-
     ret
 
-_getchar:
+getchar:
     mov ah, 0
     int 16h
     ret
 
-_endl:
+endl:
     mov al, 0x0a
-    call _putchar
+    call putchar
     mov al, 0x0d
-    call _putchar
+    call putchar
     ret
 
-_delchar:
-    cmp cl, 0
-    je self_loop
+reset_register:
+    xor ax, ax
+    xor bx, bx
+    xor dx, dx
+    xor cx, cx
+    ret
 
-    dec cl
-    dec di
-    mov byte[di], 0
+start:
+    call reset_register
+    jmp exec
 
-    mov al, 0x08
-    call _putchar
-    mov al, ''
-    call _putchar
-    mov al, 0x08
-    call _putchar
-
-self_loop:
-    call _getchar
-    cmp al, 0x0d; caso pressione enter
-    je gerar_num
-    cmp al, 0x08; caso pressione backspace
-    je _delchar
-    cmp al, 44; caso pressione a virgula gera o primeiro numero antes da virgula e depois getch para o segundo
-    je .extra
+exec:
+    call getchar
+    cmp al, 0x0d ; enter
+    je generate
 
     inc cl
-    call _putchar
+    call putchar
     stosb
 
-    jmp self_loop
+    jmp exec
 
-    .extra:
-        call _putchar
-        jmp gerar_num
-    
-    jmp self_loop
-
-self_loop_centavos:
-    call _getchar
-    cmp al, 0x0d; caso pressione enter
-    je gerar_num
-    cmp al, 0x08; caso pressione backspace
-    je _delchar
-
-    inc cl
-    call _putchar
-    stosb
-
-    jmp self_loop_centavos
-
-    .extra:
-        call _putchar
-        jmp gerar_num
-    
-    jmp self_loop_centavos
-
-gerar_num:
-    ;call _endl
+generate:
+    call endl
     lodsb
     sub al, 48
     mov dh, 0
     mov dl, al
+
     dec cl
-    
     cmp cl, 0
-    je decide
+    je calc_dol
 
-    jmp gamb1
+    .every:
+        xor ax, ax
+        mov bx, 10
+        
+        cmp cl, 0
+        je calc_dol
 
-gamb1:
-    xor ax, ax
-    mov bx, 10
-    
-    cmp cl, 0
-    je decide
+        mov ax, dx
+        mul bx
+        mov dx, ax
+        xor ax, ax
+        lodsb
+        sub al, 48
+        add dx, ax
+        dec cl
+        jmp .every
 
+esquemas:
+    call endl
+    push dx
+    call reset_register
+    pop dx
+
+    mov word[aux], dx
     mov ax, dx
-    mul bx
-    mov dx, ax
-    xor ax, ax
+    xor dx, dx
 
-    lodsb
-    sub al, 48
-    add dx, ax
-    dec cl
+    ret
 
-    jmp gamb1
+printar_coisa:
+    add ax, '0'
+    call putchar
+    xor ah, ah
+    sub ax, '0'
+    ret
 
-decide:
-    cmp byte[flag], 0
-    je calcular_dec
-    cmp byte[flag], 1
-    je calcular_cent
+eliminar_dif:
+    mul cx
+    sub word[aux], ax
+    mov dx, word[aux]
+    ret
 
-calcular_dec:
-;; mas q porra é essa?
-    mov ax, dx
-    mov bx, 2
-    
-    div bx
-    mov dx, ax
+calc_dol:
+    call esquemas
+    mov cx, 100
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-    cmp dx, 62
-    je pica
+    call esquemas
+    mov cx, 50
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-    mov byte[flag], 1
-    jmp self_loop_centavos
+    call esquemas
+    mov cx, 20
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
+    call esquemas
+    mov cx, 10
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-calcular_cent:
-    cmp dx, 24
-    je pica
+    call esquemas
+    mov cx, 5
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-    jmp calcular_cent
+    call esquemas
+    mov cx, 2
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-pica:
-    mov al, 'k'
-    call _putchar
+    call esquemas
+    mov cx, 1
+    div cx
+    call printar_coisa
+    call eliminar_dif
 
-exit:
+    jmp end
+
+debug:
+    call reset_register
+    mov al, 'T'
+    call putchar
+
+end:
     jmp $
     times 510 - ($-$$) db 0
     dw 0xaa55
