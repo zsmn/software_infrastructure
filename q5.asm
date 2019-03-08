@@ -1,13 +1,14 @@
-;; procurar uma maneira de inserir o "rugby" depois
 org 0x7c00
 jmp 0x0000:start
 
 aa db 0
+aux db 0
 
 b dw "basquete", 0, 0, 0
 f dw "futebol", 0, 0, 0
 a dw "artes marciais", 0, 0, 0
 v dw "volei", 0, 0, 0
+r dw "rugby", 0, 0, 0
 
 p1 db 0
 p2 db 0
@@ -29,6 +30,10 @@ carry_a:
 
 carry_v:
     mov si, v
+    ret
+
+carry_r:
+    mov si, r
     ret
 
 putchar:
@@ -73,18 +78,20 @@ printar_barra:
     call putchar
     ret
 
-choose_01:
-    cmp byte[p1], 0
+operations:
+    cmp byte[aux], 0
     je .carry_o1
 
-    cmp byte[p1], 'b'
+    cmp byte[aux], 'b'
     je .b
-    cmp byte[p1], 'f'
+    cmp byte[aux], 'f'
     je .f
-    cmp byte[p1], 'a'
+    cmp byte[aux], 'a'
     je .a
-    cmp byte[p1], 'v'
+    cmp byte[aux], 'v'
     je .v
+    cmp byte[aux], 'r'
+    je .r
     
     .b:
         call carry_b
@@ -97,71 +104,34 @@ choose_01:
         ret
     .v:
         call carry_v
+        ret
+    .r:
+        call carry_r
         ret
     
     .carry_o1:
         mov si, o1
         ret
 
-choose_02:
-    cmp byte[p2], 0
-    je .carry_o2
+    ret
 
-    cmp byte[p2], 'b'
-    je .b
-    cmp byte[p2], 'f'
-    je .f
-    cmp byte[p2], 'a'
-    je .a
-    cmp byte[p2], 'v'
-    je .v
-    
-    .b:
-        call carry_b
-        ret
-    .f:
-        call carry_f
-        ret
-    .a:
-        call carry_a
-        ret
-    .v:
-        call carry_v
-        ret
-    
-    .carry_o2:
-        mov si, o1
-        ret
+choose_01:
+    mov dl, byte[p1]
+    mov byte[aux], dl
+    call operations
+    ret
+
+choose_02:
+    mov dl, byte[p2]
+    mov byte[aux], dl
+    call operations
+    ret
 
 choose_03:
-    cmp byte[p3], 0
-    je .carry_o3
-
-    cmp byte[p3], 'b'
-    je .b
-    cmp byte[p3], 'f'
-    je .f
-    cmp byte[p3], 'a'
-    je .a
-    cmp byte[p3], 'v'
-    je .v
-    
-    .b:
-        call carry_b
-        ret
-    .f:
-        call carry_f
-        ret
-    .a:
-        call carry_a
-        ret
-    .v:
-        call carry_v
-        ret
-
-    .carry_o3:
-        mov si, o1
-        ret
+    mov dl, byte[p3]
+    mov byte[aux], dl
+    call operations
+    ret
 
 print_aux:
     call printar_str
