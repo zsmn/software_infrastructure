@@ -7,19 +7,19 @@
 #s2 = resultado final
 
 .text
-	addi a0, zero, 1234
-	addi a1, zero, 10
+    addi a0, zero, 1234
+    addi a1, zero, 10
     addi a2, zero, 1
     addi a3, zero, 1
-	addi a4, zero, 0
-	addi a5, zero, 10
-	addi s2, zero, 0
+    addi a4, zero, 0
+    addi a5, zero, 10
+    addi s2, zero, 0
 
 decomposition:
-	beq a0, zero, fim # caso chegue em 0, acabou o programa
+    beq a0, zero, fim # caso chegue em 0, acabou o programa
     # modulo 10 #
-	add a4, a4, a0
-	div a0, a0, a5
+    add a4, a4, a0
+    div a0, a0, a5
     mul a0, a0, a5
     sub a1, a4, a0
     # modulo 10 #
