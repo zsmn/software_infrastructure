@@ -4,7 +4,6 @@ jmp 0x0000:start
 entrada db 'o'
 entrada2 db 'w'
 entrada3 db 'V'
-;jenifer db 10
 
 start:
     call reset_register
@@ -14,7 +13,6 @@ reset_register:
     xor ax, ax
     mov dx, ax
     xor cl, cl
-   ; xor es, es
     xor dl, dl;
     xor bx, bx
     ret
@@ -75,8 +73,6 @@ transnum:
     lodsb
     mov dh, 0
     mov dl, al;
-    ;cmp al, 5
-    ;je shupa
     dec cl
     cmp cl, 0;
     je calcular;
@@ -96,8 +92,6 @@ gambi:
     dec cl;
     jmp gambi;
 calcular:
-    ;cmp dl , 5
-    ;je shupa
     xor bx, bx;
     mov bx, dx;
     xor ax,ax;
@@ -110,13 +104,7 @@ resultado:
     add ax, bx ; ax = (n*n)+n
     mov cx, 2; cx = 2; 
     div cx; ax = ((n*n)+n)/2
-    ;mov cx, bx; cx = n
-    ;mov bx , 2; bx = 2
-    ;add bx, cx ; bx = n+2
-    ;mul bx; ax = (((n*n)+n)/2)*(n+2)
-    ;mov bx, cx;
-    ;mov cx, 3;
-    ;div cx; ax = ((((n*n)+n)/2)*(n+2))/3
+
     mov bx, ax
     mov cx, ax
     mov dx, ax
@@ -124,12 +112,9 @@ resultado:
 
 mostrar:
     xor cx, cx;
-    ;cmp bx, 220;
-   ; je delicia;
     jmp numbre;
 
 numbre:
-   ; call delicia;
     mov ax, bx; ax e dx tem o numero
     mov bx, 10;
     xor dx, dx
@@ -143,25 +128,21 @@ numbre:
     ;
     ;
 
-    ;cmp ax, 0;
     add dx, '0';
     push dx;
     xor dx, dx;
     inc cl;
     mov bx, ax;
     cmp ax, 0;
-   ; call delicia;
     je ajustes;
     jmp numbre;
 
 ajustes:
     mov ch,cl;
     cmp ch, 3;
-    ;je shupa;
     jmp reverter
 
 reverter:
-    ;call fuck;
     xor ax,ax
     cmp cl, 0;
     je telinha_vitoria
@@ -172,12 +153,10 @@ reverter:
     jmp reverter;
 
 telinha_vitoria:
-    ;call fuck
     cmp ch, 0
     je exit;
     xor ax, ax;
     lodsb
-    ;call _putchar;
     dec ch;
     jmp telinha_vitoria;
 
@@ -202,24 +181,13 @@ printa:
     lodsb
     mov ah, 0eh;
     int 10h
-    ;jmp exit;
     ret
 printa2:
     lodsb
     mov ah, 0eh;
     int 10h
-    ;jmp exit;
     ret
 exit:
     jmp $
     times 510 - ($-$$) db 0
     dw 0xaa55
-
-    ; es gs fs
-   ; xor bx,bx;
-   ; je calcular;
-   ; mov bx, 10;
-   ; mul dx;
-   ; lodsb;
-   ; mov bl, al
-   ; add dx, bx
