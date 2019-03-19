@@ -1,3 +1,3 @@
-# assembly
+# software_infrastructure
 
-training assembly programming =)
+Resolution of some software infrastructure assembly problems
