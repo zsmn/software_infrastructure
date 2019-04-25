@@ -18,13 +18,13 @@ void *calc_iteration(void *argms){
     args *argumentos = (args *) argms;
     double sum = 0;
     for(int j = 0; j < n_eq; j++){
-        if(argumentos->i != j) sum += mat_coeficientes[argumentos->i][j] * mat_indices[argumentos->k-1][j];
+        if(argumentos->i != j) sum += mat_coeficientes[argumentos->i][j] * mat_indices[argumentos->k - 1][j];
     }
     pthread_barrier_wait(&barrier);
     mat_indices[argumentos->k][argumentos->i] = (1.0/mat_coeficientes[argumentos->i][argumentos->i]) * (mat_results[argumentos->i] - sum);
     /* debugging */
-    //cout << mat_results[argumentos->i] << " " << sum << endl;
-    //cout << "mat_indices[" << argumentos->i << "] = " << mat_indices[argumentos->k][argumentos->i] << endl;
+    cout << mat_results[argumentos->i] << " " << sum << endl;
+    cout << "mat_indices[" << argumentos->i << "] = " << mat_indices[argumentos->k][argumentos->i] << endl;
     return NULL;
 }
 
@@ -106,6 +106,6 @@ int main(){
 
     cout << "Resultados do metodo de jacobi com " << n_it << " iteracoes e " << n_proc << " nucleos atuando:" << endl;
     for(int x = 0; x < n_eq; x++){
-        cout << "x" << x+1 << " = " << mat_indices[n_eq][x] << endl;
+        cout << "x" << x+1 << " = " << mat_indices[n_it][x] << endl;
     }
 }
