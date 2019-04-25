@@ -121,7 +121,6 @@ int main(){
 		pthread_join(threadi, (void**)&ans);
 		printf("%s",ans);
 		cout << endl;
-		free(ans);
 	}
 	return 0;
 }
