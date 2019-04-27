@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define sp ' '
-int n=0;
+
 typedef struct valpas{
 	int il;
 	int ic;
@@ -29,14 +29,9 @@ void *solvete(void *arg){
 	char *ans;
 	char *au = (char*)malloc(412345);
 	if(k){
-
-		//cout << 'D';
 		strcat(au,"D");
 		linq++;
-		if(linq == 50){
-			strcat(au,"\n");
-			linq = 0;
-		}
+		int v1=0,v2=0,v3=0,v4=0;
 		pthread_t threads[4];
 		int a,b,c,d, g, corx, cory;
 		corx = all->enl - all->il;
@@ -49,8 +44,8 @@ void *solvete(void *arg){
 			proxi1->enl = c;
 			proxi1->enc = d;
 			pthread_create( &threads[0], NULL, solvete, proxi1);
-			pthread_join(threads[0], (void**)&ans);
-			strcat(au,ans);
+			v1=1;
+			
 		}
 		a = all->il, b = all->ic + (cory/2)+1, c = all->il + (corx/2), d = all->enc;
 		if(a <= c && b <= d && c <= all->enl && d <= all->enc){
@@ -60,8 +55,7 @@ void *solvete(void *arg){
 			proxi2->enl = c;
 			proxi2->enc = d;
 			pthread_create( &threads[1], NULL, solvete, proxi2);
-			pthread_join(threads[1], (void**)&ans);
-			strcat(au,ans);
+			v2=1;
 		}
 		a = all->il+(corx/2)+1, b = all->ic, c = all->enl, d = all->ic+(cory/2);
 		if(a <= c && b <= d && c <= all->enl && d <= all->enc){
@@ -71,8 +65,7 @@ void *solvete(void *arg){
 			proxi3->enl = c;
 			proxi3->enc = d;
 			pthread_create( &threads[2], NULL, solvete, proxi3);
-			pthread_join(threads[2], (void**)&ans);
-			strcat(au,ans);
+			v3=1;
 		}
 		a = all->il+(corx/2)+1, b = all->ic+(cory/2)+1, c = all->enl, d = all->enc;
 		if(a <= c && b <= d && c <= all->enl && d <= all->enc){
@@ -82,45 +75,55 @@ void *solvete(void *arg){
 			proxi4->enl = c;
 			proxi4->enc = d;
 			pthread_create( &threads[3], NULL, solvete, proxi4);
-			pthread_join(threads[3], (void**)&ans);
-			strcat(au,ans);
+			v4=1;
 		}
+			if(v1){
+				pthread_join(threads[0], (void**)&ans);
+				strcat(au,ans);
+			}
+			if(v2){
+				pthread_join(threads[1], (void**)&ans);
+				strcat(au,ans);
+			}
+			if(v3){
+				pthread_join(threads[2], (void**)&ans);
+				strcat(au,ans);
+			}
+			if(v4){
+				pthread_join(threads[3], (void**)&ans);
+				strcat(au,ans);
+			}
 	}
 	if(!k){
 		char atual[2];
 		atual[0]=atu;
 		atual[1]='\0'; 
 		strcat(au,atual);
-		linq++;
-		if(linq == 50){
-			strcat(au,"\n");
-			linq = 0;
-		}
 	}
 	pthread_exit((void*)au);
 	free(au);
 }
 
 int main(){
-	int tc;
-	cin >> tc;
-	while(tc--){
-		cin >> l >> co;
-		for(int i=0; i<l; i++){
-			cin >> mat[i];
-		}
-		linq=0;
-		char *ans;
-		valpas come;
-		come.il = 0;
-		come.ic = 0;
-		come.enl = l-1;
-		come.enc = co-1;
-		pthread_t threadi;
-		pthread_create( &(threadi), NULL, solvete, &come);
-		pthread_join(threadi, (void**)&ans);
-		printf("%s",ans);
-		cout << endl;
+	printf("Digite o numero de linhas e o numero de colunas\n");
+	cin >> l >> co;
+	printf("Digite sua matriz\n");
+	for(int i=0; i<l; i++){
+		cin >> mat[i];
 	}
+	linq=0;
+	char *ans;
+	valpas come;
+	come.il = 0;
+	come.ic = 0;
+	come.enl = l-1;
+	come.enc = co-1;
+	pthread_t threadi;
+	pthread_create( &(threadi), NULL, solvete, &come);
+	pthread_join(threadi, (void**)&ans);
+	printf("Resposta:\n");
+	printf("%s",ans);
+	cout << endl;
+	free(ans);
 	return 0;
 }
