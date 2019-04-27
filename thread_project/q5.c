@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pthread.h>
 
+#define tamvetor 20
 void merge(int l, int m, int r);
 int *array;
 int tam;
@@ -63,6 +64,7 @@ void merge(int l, int m, int r){
 
 void* merge_sort_threads(void *arg){
     ptr_thread_arg argumento = (ptr_thread_arg)arg;
+   // printf("arg -> low: %d , arg -> high: %d\n",argumento->low,argumento->high );
     pthread_t novathread1;
     pthread_t novathread2;
     int low, mid, high;
@@ -78,14 +80,18 @@ void* merge_sort_threads(void *arg){
     a2.high = high;
     if(low < high){
         erro1 = pthread_create(&novathread1, NULL, merge_sort_threads, &a1);
-        pthread_join(novathread1, NULL);
         erro2 = pthread_create(&novathread2, NULL, merge_sort_threads, &a2);
+        pthread_join(novathread1, NULL);
         pthread_join(novathread2, NULL);
         merge(low, mid, high);
     }
 }
 
 int main(){
+    //IMPORTANTE: Como as threads atuaram em segmentos distintos do array
+    //nao teremos variaveis sendo compartilhados. Consequentemente, nao ha
+    //margem para que ocorra condicao de disputa durante a execucao do MergeSort
+    //usando threads.
     pthread_t thread1;
     area areadecontrole;
     int erro;
@@ -106,11 +112,13 @@ int main(){
             exit(1);
     }
     pthread_join(thread1, NULL);
+
     //printando o array ordenado
     printf("Array ordenado:\n");
     for(i = 0; i < tam; i++){
         printf("%d ", array[i]);
     }
     printf("\n");
+    pthread_exit(NULL);
     return 0;
 }
